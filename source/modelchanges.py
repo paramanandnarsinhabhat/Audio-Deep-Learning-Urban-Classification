@@ -7,3 +7,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 import os
 import numpy as np
 
+# Load training and test data
+train = pd.read_csv('data/train.csv')
+test = pd.read_csv('data/test.csv')
+
