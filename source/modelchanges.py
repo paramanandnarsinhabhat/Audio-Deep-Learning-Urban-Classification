@@ -11,3 +11,6 @@ import numpy as np
 train = pd.read_csv('data/train.csv')
 test = pd.read_csv('data/test.csv')
 
+# Check the first 5 rows
+print(train.head())
+print(test.head())
