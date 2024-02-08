@@ -112,7 +112,8 @@ print(test.head())
 
 print('Control comes here ')
 import tensorflow as tf
-from tensorflow.keras.utils import to_categorical
+from tensorflow.python.tools import module_util as _module_util
+from numpy import to_categorical
 
 print("Import successful")
 
@@ -120,5 +121,59 @@ print("Import successful")
 X_train = extract_features(train['file_paths'],751)
 X_test = extract_features(test['file_paths'],751)
 
+# Encode labels
+le = LabelEncoder()
+y_train = to_categorical(le.fit_transform(train['Class']))
 
+def preprocess_audio(file_paths, max_pad_len):
+    features = []
+    for file_path in file_paths:
+        # Load audio file
+        audio, sr = librosa.load(file_path, sr=None)
+        
+        # Extract MFCCs
+        mfccs = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=40)
+        
+        # Pad or truncate MFCCs to max_pad_len
+        if mfccs.shape[1] < max_pad_len:
+            mfccs = np.pad(mfccs, ((0, 0), (0, max_pad_len - mfccs.shape[1])), mode='constant')
+        else:
+            mfccs = mfccs[:, :max_pad_len]
+        
+        # Reshape MFCCs to add channel dimension
+        mfccs = mfccs.reshape((*mfccs.shape, 1))
+        
+        features.append(mfccs)
+    
+    return np.array(features)
+
+# Split the training data into training and validation sets
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+
+# Define model architecture
+model = Sequential()
+model.add(Dense(256, activation='relu', input_shape=(X_train.shape[1],)))
+model.add(Dropout(0.5))
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(len(le.classes_), activation='softmax'))
+
+# Compile the model
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Train the model
+history = model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=50, batch_size=32, verbose=1)
+
+# Convert predictions back to class labels
+# Make predictions on the test data
+predictions = model.predict(X_test)
+predicted_labels = le.inverse_transform(np.argmax(predictions, axis=1))
+
+# Create a DataFrame with the predictions
+predictions_df = pd.DataFrame({'ID': test['ID'], 'Class': predicted_labels})
+
+# Save the DataFrame to a CSV file
+predictions_df.to_csv('data/finalpredictions.csv', index=False)
+
+print("Predictions saved to predictions.csv")
 
