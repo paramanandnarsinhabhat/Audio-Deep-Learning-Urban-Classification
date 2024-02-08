@@ -99,5 +99,26 @@ def generate_file_path(row, is_test_data, train_directory, test_directory, exten
 
 print(file_path)
 
+# Apply the function to each row in the DataFrame to create the new column for training data
+train['file_paths'] = train.apply(generate_file_path, args=(False, train_directory, test_directory, '.wav'), axis=1)
+
+# Apply the function to each row in the DataFrame to create the new column for test data
+test['file_paths'] = test.apply(generate_file_path, args=(True, train_directory, test_directory, '.wav'), axis=1)
+
+# Verify the new columns
+print(train.head())
+print(test.head())
+
+
+print('Control comes here ')
+import tensorflow as tf
+from tensorflow.keras.utils import to_categorical
+
+print("Import successful")
+
+# Extract features from training and test data
+X_train = extract_features(train['file_paths'],751)
+X_test = extract_features(test['file_paths'],751)
+
 
 
