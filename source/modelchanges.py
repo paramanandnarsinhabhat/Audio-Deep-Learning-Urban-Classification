@@ -25,3 +25,6 @@ def find_max_pad_len(file_paths):
             max_len = mfccs.shape[1]
     return max_len
 
+#Directory for train and test data
+train_directory = 'data/Train/'
+test_directory = 'data/Test/'
