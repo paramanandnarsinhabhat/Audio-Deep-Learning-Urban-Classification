@@ -84,4 +84,20 @@ def extract_features(file_paths, max_pad_len=max_pad_len):
 audio_files_directory = current_directory  #Update this path
 file_extension = '.wav' # Update this as needed
 
+#Reading the training dataset
+train = pd.read_csv('data/train.csv')
+
+
+# Define a function to generate the file path
+def generate_file_path(row, is_test_data, train_directory, test_directory, extension):
+    # Determine the directory based on is_test_data
+    directory = test_directory if is_test_data else train_directory
+    
+    # Construct the file path. Assumes the Id column contains the filename without the extension
+    file_path = os.path.join(directory, str(row['ID']) + extension)
+    return file_path
+
+print(file_path)
+
+
 
