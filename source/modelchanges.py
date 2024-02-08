@@ -33,3 +33,10 @@ test_directory = 'data/Test/'
 is_test_data = False
 current_directory = test_directory if is_test_data else train_directory
 audio_files = []
+
+
+for filename in os.listdir(current_directory):
+    if filename.endswith(".wav") or filename.endswith(".mp3"):
+        file_path = os.path.join(current_directory, filename)
+        audio_files.append(file_path)
+
