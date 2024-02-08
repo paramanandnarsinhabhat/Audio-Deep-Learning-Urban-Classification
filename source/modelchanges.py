@@ -28,3 +28,8 @@ def find_max_pad_len(file_paths):
 #Directory for train and test data
 train_directory = 'data/Train/'
 test_directory = 'data/Test/'
+
+#Making sure the current directory is test or train
+is_test_data = False
+current_directory = test_directory if is_test_data else train_directory
+audio_files = []
